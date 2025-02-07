@@ -30,8 +30,25 @@
         <a-box color="red" scale="0.5 0.5 0.5"></a-box>
     </a-marker>
 
+    <!-- Камера с атрибутом autoplay -->
     <a-entity camera></a-entity>
 </a-scene>
+
+<script>
+    // Запрашиваем доступ к камере при загрузке страницы
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                console.log("Камера активирована");
+            })
+            .catch(function(error) {
+                console.error("Ошибка при доступе к камере: ", error);
+                alert("Не удалось активировать камеру.");
+            });
+    } else {
+        alert("Ваш браузер не поддерживает доступ к камере.");
+    }
+</script>
 
 </body>
 </html>
