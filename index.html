@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR: Красный кубик</title>
+    <title>AR: Куб в пространстве</title>
 
     <!-- Подключаем A-Frame для 3D графики -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -16,21 +16,99 @@
             margin: 0;
             overflow: hidden;
         }
+
+        #ar-scene {
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
 
 <!-- A-Frame сцена для дополненной реальности -->
 <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
-    <!-- Маркер для дополненной реальности -->
-    <a-marker preset="hiro">
-        <!-- Красный кубик -->
-        <a-box color="red" scale="0.5 0.5 0.5"></a-box>
-    </a-marker>
 
     <!-- Камера для дополненной реальности -->
     <a-entity camera></a-entity>
+
+    <!-- Виртуальный куб, который можно вращать, изменять размеры и перемещать -->
+    <a-box id="cube" position="0 0 -3" color="red" scale="1 1 1" 
+           interactive-drag="true" interactive-rotate="true" interactive-scale="true">
+    </a-box>
+
 </a-scene>
+
+<script>
+    // Скрипт для взаимодействия с кубом (перемещение, вращение, изменение масштаба)
+    AFRAME.registerComponent('interactive-drag', {
+        init: function () {
+            var el = this.el;
+            var isDragging = false;
+
+            el.addEventListener('mousedown', function (e) {
+                isDragging = true;
+            });
+
+            el.addEventListener('mouseup', function (e) {
+                isDragging = false;
+            });
+
+            el.addEventListener('mousemove', function (e) {
+                if (isDragging) {
+                    var mouseMove = e.detail;
+                    var position = el.getAttribute('position');
+                    el.setAttribute('position', {x: position.x + mouseMove.x, y: position.y + mouseMove.y, z: position.z});
+                }
+            });
+        }
+    });
+
+    AFRAME.registerComponent('interactive-rotate', {
+        init: function () {
+            var el = this.el;
+            var isRotating = false;
+
+            el.addEventListener('mousedown', function (e) {
+                isRotating = true;
+            });
+
+            el.addEventListener('mouseup', function (e) {
+                isRotating = false;
+            });
+
+            el.addEventListener('mousemove', function (e) {
+                if (isRotating) {
+                    var mouseMove = e.detail;
+                    var rotation = el.getAttribute('rotation');
+                    el.setAttribute('rotation', {x: rotation.x + mouseMove.y, y: rotation.y + mouseMove.x, z: rotation.z});
+                }
+            });
+        }
+    });
+
+    AFRAME.registerComponent('interactive-scale', {
+        init: function () {
+            var el = this.el;
+            var isScaling = false;
+
+            el.addEventListener('mousedown', function (e) {
+                isScaling = true;
+            });
+
+            el.addEventListener('mouseup', function (e) {
+                isScaling = false;
+            });
+
+            el.addEventListener('mousemove', function (e) {
+                if (isScaling) {
+                    var scale = el.getAttribute('scale');
+                    var newScale = scale.x + 0.01 * e.detail.x; // Пример изменения масштаба
+                    el.setAttribute('scale', {x: newScale, y: newScale, z: newScale});
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>
