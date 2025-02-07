@@ -2,8 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>AR Cube for iPhone</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <title>3D AR Cube Fix</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
         .arjs-loader {
@@ -17,59 +17,74 @@
             justify-content: center;
             align-items: center;
             color: white;
-            font-family: Arial;
+            font-family: -apple-system, sans-serif;
         }
     </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
-    <div class="arjs-loader">Загрузка AR... Разрешите доступ к камере и медленно поводите телефоном</div>
+    <div class="arjs-loader">Наведите камеру на горизонтальную поверхность...</div>
     
     <a-scene 
         vr-mode-ui="enabled: false"
-        arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best"
-        renderer="logarithmicDepthBuffer: true; antialias: true; precision: medium;"
+        arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best; patternRatio: 0.8"
+        renderer="logarithmicDepthBuffer: true; antialias: true; precision: high; alpha: true"
         embedded>
 
-        <!-- Основной куб -->
+        <!-- 3D Cube with depth enhancement -->
         <a-box 
-            position="0 0.1 -0.5"
-            rotation="0 45 0"
-            color="#00FF00"
+            position="0 0.15 -0.5"
+            rotation="20 45 0"
+            color="#00FF88"
             scale="0.3 0.3 0.3"
-            material="opacity: 0.9; transparent: true; metalness: 0.4; roughness: 0.1"
-            shadow="cast: true; receive: true">
+            material="shader: standard; opacity: 0.95; transparent: true; metalness: 0.7; roughness: 0.2"
+            shadow="cast: true; receive: true"
+            geometry=""
+            animation="property: rotation; to: 20 405 0; loop: true; dur: 10000">
         </a-box>
 
-        <!-- Освещение -->
+        <!-- Enhanced lighting -->
         <a-light 
-            type="ambient" 
-            color="#FFFFFF"
-            intensity="0.6">
+            type="hemisphere" 
+            color="#FFFFFF" 
+            ground-color="#444444"
+            intensity="0.8">
         </a-light>
         
         <a-light 
             type="directional" 
             color="#FFFFFF"
-            intensity="0.8"
-            position="-2 3 1"
-            cast-shadow>
+            intensity="1.2"
+            position="-1 3 1"
+            cast-shadow
+            shadow-map-size="2048">
         </a-light>
 
-        <!-- Камера -->
-        <a-entity camera></a-entity>
+        <!-- Camera setup -->
+        <a-entity 
+            camera
+            position="0 0 0"
+            look-controls="enabled: false">
+        </a-entity>
     </a-scene>
 
     <script>
-        // Скрываем лоадер после загрузки
-        document.querySelector('a-scene').addEventListener('loaded', () => {
+        // Scene initialization checks
+        const scene = document.querySelector('a-scene');
+        
+        scene.addEventListener('loaded', () => {
             document.querySelector('.arjs-loader').style.display = 'none';
+            
+            // Depth buffer verification
+            const renderer = scene.renderer;
+            if (!renderer.getContext().getExtension('EXT_color_buffer_float')) {
+                alert('Ваше устройство не поддерживает расширенный 3D-рендеринг');
+            }
         });
 
-        // Обработка ошибок
-        window.addEventListener('arjs-video-loaded', () => {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert('Ваш браузер не поддерживает доступ к камере');
-            }
+        // Performance optimization
+        window.addEventListener('beforeunload', () => {
+            const components = scene.querySelectorAll('[arjs]');
+            components.forEach(comp => comp.parentNode.removeChild(comp));
         });
     </script>
 </body>
