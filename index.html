@@ -31,16 +31,21 @@
     <script>
         document.getElementById('start-camera').addEventListener('click', function() {
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(function(stream) {
-                        var video = document.getElementById('video');
-                        video.srcObject = stream;
-                        video.style.display = 'block';
-                        document.getElementById('start-camera').style.display = 'none';
-                    })
-                    .catch(function(err) {
-                        console.log("Ошибка: " + err);
-                    });
+                // Получаем доступ к камере с параметром для задней камеры
+                navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: { exact: "environment" } // Указываем использовать заднюю камеру
+                    }
+                })
+                .then(function(stream) {
+                    var video = document.getElementById('video');
+                    video.srcObject = stream;
+                    video.style.display = 'block'; // Показываем видео на странице
+                    document.getElementById('start-camera').style.display = 'none'; // Прячем кнопку
+                })
+                .catch(function(err) {
+                    console.log("Ошибка: " + err);
+                });
             } else {
                 alert('Ваш браузер не поддерживает доступ к камере.');
             }
