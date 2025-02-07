@@ -3,53 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrashCoin Game</title>
+    <title>AR: Лови мусор!</title>
+
+    <!-- Подключаем A-Frame для 3D и AR.js для дополненной реальности -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/AR.js/3.3.0/AR.js.min.js"></script>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
+            margin: 0;
+            overflow: hidden;
         }
-        button {
-            padding: 15px;
-            background-color: #4CAF50;
+        #camera-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
             color: white;
-            border: none;
-            font-size: 16px;
+            padding: 10px;
+            font-size: 18px;
             cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <h1>Начать ловить мусор!</h1>
-    <button id="start-camera">Открыть камеру</button>
 
-    <video id="video" width="100%" height="auto" style="display:none;" autoplay></video>
-    <script>
-        document.getElementById('start-camera').addEventListener('click', function() {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                // Получаем доступ к камере с параметром для задней камеры
-                navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: { exact: "environment" } // Указываем использовать заднюю камеру
-                    }
-                })
-                .then(function(stream) {
-                    var video = document.getElementById('video');
-                    video.srcObject = stream;
-                    video.style.display = 'block'; // Показываем видео на странице
-                    document.getElementById('start-camera').style.display = 'none'; // Прячем кнопку
-                })
-                .catch(function(err) {
-                    console.log("Ошибка: " + err);
-                });
-            } else {
-                alert('Ваш браузер не поддерживает доступ к камере.');
-            }
-        });
-    </script>
+<!-- Кнопка для запуска камеры -->
+<button id="camera-button">Открыть камеру</button>
+
+<!-- A-Frame сцена с AR -->
+<a-scene embedded arjs>
+    <!-- Камера для дополненной реальности -->
+    <a-marker preset="hiro">
+        <!-- 3D объект (например, мусор) -->
+        <a-box position="0 0.5 0" color="red" scale="0.5 0.5 0.5"></a-box>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+    // Обработчик для кнопки открытия камеры
+    document.getElementById('camera-button').addEventListener('click', function() {
+        // Показываем сцену дополненной реальности
+        document.querySelector('a-scene').style.display = 'block';
+        this.style.display = 'none';  // Прячем кнопку
+    });
+</script>
+
 </body>
 </html>
