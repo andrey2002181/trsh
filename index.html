@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>3D AR Cube Fix</title>
+    <title>Static AR Cube</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
@@ -26,23 +26,32 @@
     
     <a-scene 
         vr-mode-ui="enabled: false"
-        arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best; patternRatio: 0.8"
-        renderer="logarithmicDepthBuffer: true; antialias: true; precision: high; alpha: true"
+        arjs="sourceType: webcam; 
+             debugUIEnabled: false; 
+             trackingMethod: world; 
+             worldSensing: true;
+             positionStabilization: 0.9;"
+        renderer="logarithmicDepthBuffer: true; 
+                antialias: true; 
+                precision: high;"
         embedded>
 
-        <!-- 3D Cube with depth enhancement -->
+        <!-- Статичный куб -->
         <a-box 
             position="0 0.15 -0.5"
-            rotation="20 45 0"
+            rotation="0 0 0"
             color="#00FF88"
             scale="0.3 0.3 0.3"
-            material="shader: standard; opacity: 0.95; transparent: true; metalness: 0.7; roughness: 0.2"
-            shadow="cast: true; receive: true"
-            geometry=""
-            animation="property: rotation; to: 20 405 0; loop: true; dur: 10000">
+            material="shader: standard; 
+                    opacity: 0.95; 
+                    transparent: true; 
+                    metalness: 0.7; 
+                    roughness: 0.2"
+            static-body
+            shadow="cast: true; receive: true">
         </a-box>
 
-        <!-- Enhanced lighting -->
+        <!-- Освещение -->
         <a-light 
             type="hemisphere" 
             color="#FFFFFF" 
@@ -59,32 +68,22 @@
             shadow-map-size="2048">
         </a-light>
 
-        <!-- Camera setup -->
+        <!-- Камера с улучшенным трекингом -->
         <a-entity 
             camera
-            position="0 0 0"
-            look-controls="enabled: false">
+            look-controls="enabled: false"
+            arjs-camera="smoothing: 0.8">
         </a-entity>
     </a-scene>
 
     <script>
-        // Scene initialization checks
-        const scene = document.querySelector('a-scene');
-        
-        scene.addEventListener('loaded', () => {
+        document.querySelector('a-scene').addEventListener('loaded', () => {
             document.querySelector('.arjs-loader').style.display = 'none';
             
-            // Depth buffer verification
-            const renderer = scene.renderer;
-            if (!renderer.getContext().getExtension('EXT_color_buffer_float')) {
-                alert('Ваше устройство не поддерживает расширенный 3D-рендеринг');
-            }
-        });
-
-        // Performance optimization
-        window.addEventListener('beforeunload', () => {
-            const components = scene.querySelectorAll('[arjs]');
-            components.forEach(comp => comp.parentNode.removeChild(comp));
+            // Фиксация объекта в мировых координатах
+            const cube = document.querySelector('a-box');
+            cube.setAttribute('position', {x: 0, y: 0.15, z: -0.5});
+            cube.setAttribute('rotation', {x: 0, y: 0, z: 0});
         });
     </script>
 </body>
