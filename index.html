@@ -35,16 +35,12 @@
 </a-scene>
 
 <script>
-    // Отладочная информация
-    console.log("Страница загружена.");
-
-    // Запрашиваем доступ к камере при загрузке страницы
+    // Проверяем доступ к камере
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         console.log("Запрашиваем доступ к камере...");
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(function(stream) {
                 console.log("Камера активирована.");
-                // Добавим поток в видео элемент
                 let videoElement = document.querySelector('video');
                 if (videoElement) {
                     videoElement.srcObject = stream;
