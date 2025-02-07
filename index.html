@@ -24,6 +24,9 @@
             font-size: 18px;
             cursor: pointer;
         }
+        #ar-scene {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -32,7 +35,7 @@
 <button id="camera-button">Открыть камеру</button>
 
 <!-- A-Frame сцена с AR -->
-<a-scene embedded arjs>
+<a-scene id="ar-scene" embedded arjs>
     <!-- Камера для дополненной реальности -->
     <a-marker preset="hiro">
         <!-- Красный кубик -->
@@ -43,11 +46,28 @@
 </a-scene>
 
 <script>
-    // Обработчик для кнопки открытия камеры
     document.getElementById('camera-button').addEventListener('click', function() {
-        // Показываем сцену дополненной реальности
-        document.querySelector('a-scene').style.display = 'block';
-        this.style.display = 'none';  // Прячем кнопку
+        // Запрашиваем доступ к камере
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    // Показываем сцену дополненной реальности
+                    document.getElementById('ar-scene').style.display = 'block';
+                    // Прячем кнопку
+                    document.getElementById('camera-button').style.display = 'none';
+                    // Выводим видео с камеры
+                    const videoElement = document.querySelector('video');
+                    if (videoElement) {
+                        videoElement.srcObject = stream;
+                    }
+                })
+                .catch(function(err) {
+                    console.error("Ошибка доступа к камере: ", err);
+                    alert("Не удалось получить доступ к камере.");
+                });
+        } else {
+            alert("Ваш браузер не поддерживает доступ к камере.");
+        }
     });
 </script>
 
