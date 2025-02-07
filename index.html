@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR: 3D куб, который можно осматривать</title>
+    <title>AR: 3D куб для осмотра</title>
 
     <!-- Подключаем A-Frame для 3D графики -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -28,11 +28,11 @@
 <!-- A-Frame сцена для дополненной реальности -->
 <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
 
-    <!-- Камера, которая позволяет двигаться вокруг объекта -->
+    <!-- Камера для дополненной реальности -->
     <a-entity camera look-controls="pointerLockEnabled: true;"></a-entity>
 
-    <!-- Виртуальный 3D-куб -->
-    <a-box position="0 0 -3" color="red" scale="1 1 1" rotation="0 45 0"></a-box>
+    <!-- Виртуальный 3D-куб, который будет висеть в воздухе -->
+    <a-box id="cube" position="0 1 -3" color="red" scale="1 1 1"></a-box>
 
 </a-scene>
 
