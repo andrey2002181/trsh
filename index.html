@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR: 3D куб</title>
+    <title>AR: 3D куб с видимыми всеми гранями</title>
 
     <!-- Подключаем A-Frame для 3D графики -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -31,8 +31,9 @@
     <!-- Камера для дополненной реальности -->
     <a-entity camera></a-entity>
 
-    <!-- Виртуальный 3D-куб -->
-    <a-box position="0 0 -3" color="red" scale="1 1 1"></a-box>
+    <!-- Виртуальный 3D-куб, который отображает все его грани -->
+    <a-box position="0 0 -3" color="red" scale="1 1 1"
+           rotation="45 45 0"></a-box>
 
 </a-scene>
 
