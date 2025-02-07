@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrashCoin Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Начать ловить мусор!</h1>
+    <button id="start-camera">Открыть камеру</button>
+
+    <video id="video" width="100%" height="auto" style="display:none;" autoplay></video>
+    <script>
+        document.getElementById('start-camera').addEventListener('click', function() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        var video = document.getElementById('video');
+                        video.srcObject = stream;
+                        video.style.display = 'block';
+                        document.getElementById('start-camera').style.display = 'none';
+                    })
+                    .catch(function(err) {
+                        console.log("Ошибка: " + err);
+                    });
+            } else {
+                alert('Ваш браузер не поддерживает доступ к камере.');
+            }
+        });
+    </script>
+</body>
+</html>
