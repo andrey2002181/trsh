@@ -3,24 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест камеры</title>
+    <title>AR: Красный кубик</title>
+
+    <!-- Подключаем A-Frame и AR.js -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/AR.js/3.3.0/AR.js.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #ar-scene {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Тест камеры</h1>
+<!-- A-Frame сцена с AR -->
+<a-scene id="ar-scene" embedded arjs>
+    <!-- Камера для дополненной реальности -->
+    <a-marker preset="hiro">
+        <!-- Красный кубик -->
+        <a-box color="red" scale="0.5 0.5 0.5"></a-box>
+    </a-marker>
 
-<!-- Видео элемент для отображения видеопотока с камеры -->
-<video id="video" width="100%" height="100%" autoplay></video>
+    <!-- Камера -->
+    <a-entity camera></a-entity>
+</a-scene>
 
 <script>
-    // Проверяем поддержку доступа к камере
+    // Отладочная информация
+    console.log("Страница загружена.");
+
+    // Запрашиваем доступ к камере при загрузке страницы
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         console.log("Запрашиваем доступ к камере...");
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(function(stream) {
                 console.log("Камера активирована.");
-                let video = document.getElementById('video');
-                video.srcObject = stream;
+                // Добавим поток в видео элемент
+                let videoElement = document.querySelector('video');
+                if (videoElement) {
+                    videoElement.srcObject = stream;
+                }
             })
             .catch(function(error) {
                 console.error("Ошибка при доступе к камере: ", error);
