@@ -2,115 +2,75 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>AR Cube</title>
+    <title>AR Cube for iPhone</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <style>
-        body { 
-            margin: 0;
-            overflow: hidden;
-        }
-        canvas { 
-            display: block;
+        .arjs-loader {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: Arial;
         }
     </style>
 </head>
-<body>
-    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+<body style="margin: 0; overflow: hidden;">
+    <div class="arjs-loader">Загрузка AR... Разрешите доступ к камере и медленно поводите телефоном</div>
+    
+    <a-scene 
+        vr-mode-ui="enabled: false"
+        arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best"
+        renderer="logarithmicDepthBuffer: true; antialias: true; precision: medium;"
+        embedded>
+
+        <!-- Основной куб -->
+        <a-box 
+            position="0 0.1 -0.5"
+            rotation="0 45 0"
+            color="#00FF00"
+            scale="0.3 0.3 0.3"
+            material="opacity: 0.9; transparent: true; metalness: 0.4; roughness: 0.1"
+            shadow="cast: true; receive: true">
+        </a-box>
+
+        <!-- Освещение -->
+        <a-light 
+            type="ambient" 
+            color="#FFFFFF"
+            intensity="0.6">
+        </a-light>
+        
+        <a-light 
+            type="directional" 
+            color="#FFFFFF"
+            intensity="0.8"
+            position="-2 3 1"
+            cast-shadow>
+        </a-light>
+
+        <!-- Камера -->
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        // Скрываем лоадер после загрузки
+        document.querySelector('a-scene').addEventListener('loaded', () => {
+            document.querySelector('.arjs-loader').style.display = 'none';
+        });
+
+        // Обработка ошибок
+        window.addEventListener('arjs-video-loaded', () => {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Ваш браузер не поддерживает доступ к камере');
             }
-        }
-    </script>
-    <script type="module">
-        import * as THREE from 'three';
-        import { ARButton } from 'three/addons/webxr/ARButton.js';
-
-        let camera, scene, renderer, cube;
-        let hitTestSource = null;
-
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.01, 20);
-            
-            renderer = new THREE.WebGLRenderer({ 
-                antialias: true, 
-                alpha: true 
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.xr.enabled = true;
-            document.body.appendChild(renderer.domElement);
-            
-            // Создание AR кнопки
-            document.body.appendChild(ARButton.createButton(renderer, {
-                requiredFeatures: ['hit-test'],
-                optionalFeatures: ['dom-overlay']
-            }));
-            
-            // Освещение
-            const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 3);
-            scene.add(light);
-            
-            // Инициализация куба
-            createCube();
-            
-            // Обработка движения камеры
-            renderer.xr.addEventListener('sessionstart', (event) => {
-                event.session.addEventListener('select', onSelect);
-                event.session.requestReferenceSpace('local').then((referenceSpace) => {
-                    event.session.requestHitTestSource({ space: referenceSpace }).then((source) => {
-                        hitTestSource = source;
-                    });
-                });
-            });
-
-            renderer.setAnimationLoop((timestamp, frame) => {
-                if (frame) {
-                    const referenceSpace = renderer.xr.getReferenceSpace();
-                    const session = renderer.xr.getSession();
-                    
-                    if (hitTestSource && cube) {
-                        const hitTestResults = frame.getHitTestResults(hitTestSource);
-                        if (hitTestResults.length > 0) {
-                            const hit = hitTestResults[0];
-                            cube.position.setFromMatrixPosition(hit.getPose(referenceSpace).transform.matrix);
-                        }
-                    }
-                }
-                renderer.render(scene, camera);
-            });
-        }
-
-        function createCube() {
-            const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-            const material = new THREE.MeshPhongMaterial({
-                color: 0x00ff00,
-                transparent: true,
-                opacity: 0.8
-            });
-            cube = new THREE.Mesh(geometry, material);
-            cube.visible = false;
-            scene.add(cube);
-        }
-
-        function onSelect() {
-            if (!cube.visible) {
-                cube.visible = true;
-            }
-        }
-
-        // Обработка изменения размера окна
-        window.addEventListener('resize', onWindowResize);
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        init();
+        });
     </script>
 </body>
 </html>
