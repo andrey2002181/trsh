@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR: Куб в пространстве</title>
+    <title>AR: Виртуальный кубик</title>
 
     <!-- Подключаем A-Frame для 3D графики -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -21,6 +21,11 @@
             width: 100%;
             height: 100%;
         }
+
+        /* Убираем кнопку VR */
+        .a-enter-vr {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -31,78 +36,90 @@
     <!-- Камера для дополненной реальности -->
     <a-entity camera></a-entity>
 
-    <!-- Виртуальный куб, который можно вращать, изменять размеры и перемещать -->
-    <a-box id="cube" position="0 0 -3" color="red" scale="1 1 1" 
-           interactive-drag="true" interactive-rotate="true" interactive-scale="true">
+    <!-- Виртуальный 3D-куб -->
+    <a-box id="cube" position="0 0 -3" color="red" scale="1 1 1"
+           draggable="true" rotate-on-drag="true" scale-on-drag="true">
     </a-box>
 
 </a-scene>
 
 <script>
-    // Скрипт для взаимодействия с кубом (перемещение, вращение, изменение масштаба)
-    AFRAME.registerComponent('interactive-drag', {
+    // Регистрация компонента для перетаскивания объекта
+    AFRAME.registerComponent('draggable', {
         init: function () {
             var el = this.el;
             var isDragging = false;
 
-            el.addEventListener('mousedown', function (e) {
+            el.addEventListener('mousedown', function () {
                 isDragging = true;
             });
 
-            el.addEventListener('mouseup', function (e) {
+            el.addEventListener('mouseup', function () {
                 isDragging = false;
             });
 
             el.addEventListener('mousemove', function (e) {
                 if (isDragging) {
-                    var mouseMove = e.detail;
+                    var movementX = e.movementX * 0.01; // Масштабируем движение
+                    var movementY = e.movementY * 0.01;
                     var position = el.getAttribute('position');
-                    el.setAttribute('position', {x: position.x + mouseMove.x, y: position.y + mouseMove.y, z: position.z});
+                    el.setAttribute('position', {
+                        x: position.x + movementX,
+                        y: position.y - movementY,
+                        z: position.z
+                    });
                 }
             });
         }
     });
 
-    AFRAME.registerComponent('interactive-rotate', {
+    // Регистрация компонента для вращения объекта
+    AFRAME.registerComponent('rotate-on-drag', {
         init: function () {
             var el = this.el;
             var isRotating = false;
 
-            el.addEventListener('mousedown', function (e) {
+            el.addEventListener('mousedown', function () {
                 isRotating = true;
             });
 
-            el.addEventListener('mouseup', function (e) {
+            el.addEventListener('mouseup', function () {
                 isRotating = false;
             });
 
             el.addEventListener('mousemove', function (e) {
                 if (isRotating) {
-                    var mouseMove = e.detail;
+                    var movementX = e.movementX * 0.1; // Масштабируем вращение
+                    var movementY = e.movementY * 0.1;
                     var rotation = el.getAttribute('rotation');
-                    el.setAttribute('rotation', {x: rotation.x + mouseMove.y, y: rotation.y + mouseMove.x, z: rotation.z});
+                    el.setAttribute('rotation', {
+                        x: rotation.x + movementY,
+                        y: rotation.y + movementX,
+                        z: rotation.z
+                    });
                 }
             });
         }
     });
 
-    AFRAME.registerComponent('interactive-scale', {
+    // Регистрация компонента для изменения размера объекта
+    AFRAME.registerComponent('scale-on-drag', {
         init: function () {
             var el = this.el;
             var isScaling = false;
 
-            el.addEventListener('mousedown', function (e) {
+            el.addEventListener('mousedown', function () {
                 isScaling = true;
             });
 
-            el.addEventListener('mouseup', function (e) {
+            el.addEventListener('mouseup', function () {
                 isScaling = false;
             });
 
             el.addEventListener('mousemove', function (e) {
                 if (isScaling) {
                     var scale = el.getAttribute('scale');
-                    var newScale = scale.x + 0.01 * e.detail.x; // Пример изменения масштаба
+                    var newScale = scale.x + 0.01 * e.movementX; // Изменяем масштаб по оси X
                     el.setAttribute('scale', {x: newScale, y: newScale, z: newScale});
                 }
             });
