@@ -1,26 +1,27 @@
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR: Куб в реальной комнате</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-# Ваш токен
-TOKEN = 'your_telegram_bot_token'
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
 
-def start(update: Update, context: CallbackContext):
-    # Отправка кнопки с ссылкой на веб-приложение
-    keyboard = [
-        [
-            {"text": "Открыть AR", "url": "https://your-web-app-url.com"}
-        ]
-    ]
-    update.message.reply_text("Нажмите кнопку для открытия AR-сцены!", reply_markup={"inline_keyboard": keyboard})
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <a-entity camera></a-entity>
 
-def main():
-    updater = Updater(TOKEN, use_context=True)
-    dp = updater.dispatcher
+        <!-- 3D куб -->
+        <a-box position="0 0.5 -2" rotation="0 0 0" scale="1 1 1" color="red"></a-box>
+    </a-scene>
 
-    dp.add_handler(CommandHandler("start", start))
-
-    updater.start_polling()
-    updater.idle()
-
-if __name__ == '__main__':
-    main()
+</body>
+</html>
