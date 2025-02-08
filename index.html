@@ -1,124 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Fixed 3D AR Cube</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-    <style>
-        /* Важные стили для полного экрана */
-        body { 
-            margin: 0; 
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
-        }
-        .arjs-loader {
-            height: 100%;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-family: -apple-system, sans-serif;
-        }
-        a-scene {
-            width: 100% !important;
-            height: 100vh !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-        }
-    </style>
-</head>
-<body>
-    <div class="arjs-loader">Инициализация AR... Наведите камеру на пол</div>
-    
-    <a-scene 
-        vr-mode-ui="enabled: false"
-        arjs="sourceType: webcam;
-             debugUIEnabled: false;
-             trackingMethod: best;
-             worldSensing: true;
-             detectionMode: mono_and_matrix;
-             matrixCodeType: 3x3;"
-        renderer="antialias: true; alpha: true; precision: high;"
-        embedded>
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
-        <!-- 3D Cube с улучшенной геометрией -->
-        <a-box
-            position="0 0.15 -0.5"
-            rotation="0 45 0"
-            depth="0.3"
-            height="0.3"
-            width="0.3"
-            color="#00FF88"
-            material="shader: standard;
-                    metalness: 0.7;
-                    roughness: 0.2;
-                    transparent: true;
-                    opacity: 0.95;"
-            shadow="cast: true; receive: true">
-        </a-box>
+# Ваш токен
+TOKEN = 'your_telegram_bot_token'
 
-        <!-- Оптимизированное освещение -->
-        <a-light 
-            type="hemisphere" 
-            color="#FFFFFF"
-            ground-color="#808080"
-            intensity="1.0">
-        </a-light>
-        
-        <a-light 
-            type="directional"
-            color="#FFFFFF"
-            intensity="1.5"
-            position="-1 2 0.5"
-            cast-shadow
-            shadow-map-size="1024">
-        </a-light>
+def start(update: Update, context: CallbackContext):
+    # Отправка кнопки с ссылкой на веб-приложение
+    keyboard = [
+        [
+            {"text": "Открыть AR", "url": "https://your-web-app-url.com"}
+        ]
+    ]
+    update.message.reply_text("Нажмите кнопку для открытия AR-сцены!", reply_markup={"inline_keyboard": keyboard})
 
-        <!-- Камера с полным покрытием экрана -->
-        <a-entity
-            camera
-            look-controls="enabled: false"
-            arjs-camera="smoothingFactor: 0.8"
-            position="0 0 0">
-        </a-entity>
-    </a-scene>
+def main():
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const scene = document.querySelector('a-scene');
-            
-            // Проверка инициализации
-            scene.addEventListener('loaded', () => {
-                document.querySelector('.arjs-loader').style.display = 'none';
-                
-                // Принудительная установка 3D-параметров
-                const cube = document.querySelector('a-box');
-                cube.setAttribute('geometry', {
-                    depth: 0.3,
-                    height: 0.3,
-                    width: 0.3
-                });
-                
-                // Проверка WebGL
-                if (!scene.renderer.getContext().getParameter(0x8B9D)) {
-                    alert('Ваше устройство не поддерживает необходимые 3D-функции');
-                }
-            });
+    dp.add_handler(CommandHandler("start", start))
 
-            // Обработка изменения ориентации
-            window.addEventListener('orientationchange', () => {
-                scene.resize();
-            });
-        });
-    </script>
-</body>
-</html>
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
